@@ -8,7 +8,8 @@ license-file = "COPYING"
 description = "A command-line utility for retrieving OAuth2 tokens from GNOME Online Accounts."
 repository = "https://github.com/hdonnay/goa-oauth2"
 keywords = ["oauth", "oauth2", "gnome", "dbus"]
-categorites =["authentication", "command-line-utilities", "config"]
+categorites = ["authentication", "command-line-utilities", "config"]
+exclude = ["dbus-interfaces.xml"]
 
 [dependencies]
 zbus = "2.0.0-beta.6"
