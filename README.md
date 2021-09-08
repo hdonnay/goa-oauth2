@@ -4,7 +4,8 @@ This utility retrieves OAuth2 tokens from the GNOME Online Accounts service.
 It's extremely useful for applications like msmtp:
 
 ```.msmtprc
-# ...
+defaults
+auth oauthbearer
 
 account gmail
 host smtp.gmail.com
