@@ -3,7 +3,6 @@ use online_accounts::OAuth2BasedProxy;
 
 use clap::{App, Arg};
 use zbus::fdo::ObjectManagerProxy;
-use zvariant::OwnedObjectPath;
 
 #[derive(Debug)]
 struct NotFound;
@@ -33,7 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let want = m.value_of("ACCOUNT").expect("account name missing");
     let dest = om.inner().destination().to_owned();
 
-    for path in om
+    let tok = om
         .get_managed_objects()?
         .iter()
         .filter(|(_, i)| {
@@ -55,16 +54,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Some(path)
             }
         })
-        .collect::<Vec<&OwnedObjectPath>>()
-    {
-        let (tok, _expiry) = OAuth2BasedProxy::builder(&conn)
-            .destination(dest)?
-            .path(path)?
-            .build()?
-            .get_access_token()?;
-        println!("{}", tok);
-        return Ok(());
-    }
+        .map(|path| {
+            let (tok, _expiry) = OAuth2BasedProxy::builder(&conn)
+                .destination(&dest)?
+                .path(path)?
+                .build()?
+                .get_access_token()?;
+            Ok(tok)
+        })
+        .find_map(|t: Result<String, Box<dyn std::error::Error>>| t.ok())
+        .ok_or_else(|| Box::new(NotFound))?;
 
-    Err(Box::new(NotFound))
+    println!("{}", tok);
+    Ok(())
 }
