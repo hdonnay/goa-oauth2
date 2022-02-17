@@ -12,7 +12,7 @@ categorites = ["authentication", "command-line-utilities", "config"]
 exclude = ["dbus-interfaces.xml"]
 
 [dependencies]
-zbus = "2.0.0-beta.6"
+zbus = "2.1"
 zvariant = "2.8"
 
 [dependencies.clap]

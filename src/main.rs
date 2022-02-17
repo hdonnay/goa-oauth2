@@ -1,8 +1,8 @@
 mod online_accounts;
-use online_accounts::OAuth2BasedProxy;
+use online_accounts::OAuth2BasedProxyBlocking;
 
 use clap::{App, Arg};
-use zbus::fdo::ObjectManagerProxy;
+use zbus::blocking::{fdo::ObjectManagerProxy, Connection};
 
 #[derive(Debug)]
 struct NotFound;
@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .author("Hank Donnay <hdonnay@gmail.com>")
         .arg(Arg::with_name("ACCOUNT").required(true));
 
-    let conn = zbus::Connection::session()?;
+    let conn = Connection::session()?;
     let om = ObjectManagerProxy::builder(&conn)
         .destination(GOA_DEST)?
         .path(GOA_PATH)?
@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         })
         .map(|path| {
-            let (tok, _expiry) = OAuth2BasedProxy::builder(&conn)
+            let (tok, _expiry) = OAuth2BasedProxyBlocking::builder(&conn)
                 .destination(&dest)?
                 .path(path)?
                 .build()?
