@@ -279,7 +279,7 @@ dependencies = [
 
 [[package]]
 name = "goa-oauth2"
-version = "1.1.0"
+version = "1.1.1"
 dependencies = [
  "clap",
  "zbus",
