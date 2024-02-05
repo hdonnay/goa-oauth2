@@ -1,7 +1,7 @@
 mod online_accounts;
 use online_accounts::OAuth2BasedProxyBlocking;
 
-use clap::{App, Arg};
+use clap::{Arg, Command};
 use zbus::blocking::{fdo::ObjectManagerProxy, Connection};
 
 #[derive(Debug)]
@@ -17,11 +17,11 @@ static GOA_PATH: &str = "/org/gnome/OnlineAccounts";
 static GOA_DEST: &str = "org.gnome.OnlineAccounts";
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let app = App::new("goa-oauth2")
+    let app = Command::new("goa-oauth2")
         .version("1.1")
         .about("asks GNOME Online Accounts for OAuth2 tokens")
         .author("Hank Donnay <hdonnay@gmail.com>")
-        .arg(Arg::with_name("ACCOUNT").required(true));
+        .arg(Arg::new("ACCOUNT").required(true));
 
     let conn = Connection::session()?;
     let om = ObjectManagerProxy::builder(&conn)
@@ -29,7 +29,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .path(GOA_PATH)?
         .build()?;
     let m = app.get_matches();
-    let want = m.value_of("ACCOUNT").expect("account name missing");
+    let want = m
+        .get_one::<String>("ACCOUNT")
+        .expect("account name missing");
     let dest = om.inner().destination().to_owned();
 
     let tok = om
